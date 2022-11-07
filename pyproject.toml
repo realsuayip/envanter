@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "envanter"
+version = "1.0.0"
+description = "Yet another environment parser."
+readme = "README.md"
+authors = [{ name = "suayip uzulmez", email = "suayip.541@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["env", "envparse", "environment", "environment-parser"]
+requires-python = ">=3.10"
+
+[project.urls]
+"Homepage" = "https://github.com/realsuayip/envanter"
+"Bug Tracker" = "https://github.com/realsuayip/envanter/issues"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+combine_as_imports=true
+line_length = 79
