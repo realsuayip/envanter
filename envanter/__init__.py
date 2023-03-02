@@ -49,10 +49,10 @@ class EnvironmentParser:
         self,
         name: _str_T,
         /,
-        default: List[Any] = _empty,
+        default: _T = _empty,
         *,
         delimiter: _str_T = ",",
-    ) -> List[Any]:
+    ) -> List[str] | _T:
         """
         Derive a list from the value of an environment variable.
 
