@@ -27,6 +27,26 @@ class TestEnvironmentParser(TestCase):
         self.assertEqual(lst, env.list("list1"))
         self.assertEqual(lst, env.list("list2", delimiter="?"))
 
+    def test_parse_choice(self):
+        os.environ["my_choice"] = "country"
+        os.environ["my_int"] = "52"
+        os.environ["bad_choice"] = "world"
+
+        val1 = env.choice("my_choice", choices=["country", "hello"])
+        self.assertEqual("country", val1)
+
+        val2 = env.choice("my_int", choices=["52"], parser=int)
+        self.assertEqual(52, val2)
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r"Got invalid value \(52\) from environment\, was expecting",
+        ):
+            env.choice("my_int", choices=["country", "hello"])
+
+        val3 = env.choice("potato", choices=["tomato"], default=10)
+        self.assertEqual(10, val3)
+
     def test_parse_bool(self):
         os.environ["bool_1"] = "1"
         os.environ["bool_0"] = "0"
@@ -46,7 +66,10 @@ class TestEnvironmentParser(TestCase):
         self.assertFalse(env.bool("bool_false_2"))
 
         os.environ["bad_bool"] = "nope"
-        with self.assertRaises(AssertionError):
+        with self.assertRaisesRegex(
+            ValueError,
+            r"Got invalid value \(nope\) from environment\, was expecting",
+        ):
             env.bool("bad_bool")
 
     def test_required(self):
