@@ -3,12 +3,18 @@ from __future__ import annotations
 import decimal
 import json
 import os
-from typing import TypeVar, List, Callable, Any, cast
+from typing import Any, Callable, List, TypeVar, cast
 
 __version__ = "1.1.0"
 __all__ = ["env", "EnvironmentParser"]
 
-_empty: Any = object()
+
+class _Empty:
+    def __repr__(self) -> str:
+        return "empty"
+
+
+_empty: Any = _Empty()
 _T = TypeVar("_T")
 _str_T = str
 _str_F = cast(Callable[..., _T], str)
@@ -35,6 +41,8 @@ class EnvironmentParser:
          not found.
         :param parser: A callable object that is going to parse the
          variable.
+        :raises: ``KeyError``
+        :parser: ``str`` if no custom parser is specified.
         :return: Parsed environment variable or the default value.
         """
         try:
@@ -62,6 +70,8 @@ class EnvironmentParser:
         :param delimiter: Specify a string with which the variable will
          be separated. By default, a comma is used, for example
          'hello,world' would yield a list with 2 members.
+        :raises: ``KeyError``
+        :parser: ``str``
         :return: A list of strings or the default value.
         """
         try:
@@ -93,6 +103,8 @@ class EnvironmentParser:
         :param choices: List of string that contain valid choices.
         :param parser: A callable object that is going to parse the
          variable, optional.
+        :raises: ``KeyError`` ``ValueError``
+        :parser: ``str`` if no custom parser is specified.
         :return: The parsed value of environment variable.
         """
 
@@ -122,6 +134,9 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError`` ``ValueError``
+        :parser: N/A. Checks if the value is in allowed values
+         specified above.
         :return: A boolean or the default value.
         """
         try:
@@ -153,6 +168,8 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError``
+        :parser: N/A.
         :return: A string or the default value.
         """
         try:
@@ -169,6 +186,8 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError``
+        :parser: ``int``
         :return: An integer or the default value.
         """
         try:
@@ -185,6 +204,8 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError``
+        :parser: ``float`` if no custom parser is specified
         :return: A float or the default value.
         """
 
@@ -204,6 +225,8 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError``
+        :parser: ``decimal.Decimal`` if no custom parser is specified
         :return: A decimal or the default value.
         """
 
@@ -221,6 +244,8 @@ class EnvironmentParser:
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
+        :raises: ``KeyError``
+        :parser: ``json.loads``
         :return: The Python serialized version of the JSON,
          or the default value.
         """
