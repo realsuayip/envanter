@@ -16,6 +16,7 @@ class _Empty:
 
 _empty: Any = _Empty()
 _T = TypeVar("_T")
+_V = TypeVar("_V")
 _str_T = str
 _str_F = cast(Callable[..., _T], str)
 
@@ -29,9 +30,9 @@ class EnvironmentParser:
         self,
         name: _str_T,
         /,
-        default: _T = _empty,
+        default: _V = _empty,
         parser: Callable[..., _T] = _str_F,
-    ) -> _T:
+    ) -> _T | _V:
         """
         Allows fetching values from environment with custom parser
         function to modify it before returning.
@@ -57,10 +58,11 @@ class EnvironmentParser:
         self,
         name: _str_T,
         /,
-        default: _T = _empty,
+        default: _V = _empty,
         *,
         delimiter: _str_T = ",",
-    ) -> List[str] | _T:
+        parser: Callable[..., _T] = _str_F,
+    ) -> List[str] | List[_T] | _V:
         """
         Derive a list from the value of an environment variable.
 
@@ -70,8 +72,11 @@ class EnvironmentParser:
         :param delimiter: Specify a string with which the variable will
          be separated. By default, a comma is used, for example
          'hello,world' would yield a list with 2 members.
+        :param parser: Specify a parser callable, which will be mapped
+          to resulting list. For example, if you are expecting a list
+          of integers, you may pass the ``int`` function.
         :raises: ``KeyError``
-        :parser: ``str``
+        :parser: ``str`` if no custom parser is specified.
         :return: A list of strings or the default value.
         """
         try:
@@ -80,17 +85,17 @@ class EnvironmentParser:
             if default is _empty:
                 raise
             return default
-        return value.split(delimiter)
+        return [parser(item) for item in value.split(delimiter)]
 
     def choice(
         self,
         name: _str_T,
         /,
-        default: _T = _empty,
+        default: _V = _empty,
         *,
         choices: List[_str_T],
         parser: Callable[..., _T] = _str_F,
-    ) -> _T:
+    ) -> _T | _V:
         """
         Get an environment variable, provided that it complies with the
         choices in the related parameter. Otherwise, throws an exception

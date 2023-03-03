@@ -27,6 +27,12 @@ class TestEnvironmentParser(TestCase):
         self.assertEqual(lst, env.list("list1"))
         self.assertEqual(lst, env.list("list2", delimiter="?"))
 
+    def test_parse_list_with_custom_parser(self):
+        os.environ["list1"] = "1.3,2,3"
+
+        val = env.list("list1", parser=float)
+        self.assertEqual([1.3, 2.0, 3.0], val)
+
     def test_parse_choice(self):
         os.environ["my_choice"] = "country"
         os.environ["my_int"] = "52"
