@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "envanter"
-version = "1.1.2"
+version = "1.2.0"
 description = "Yet another environment parser."
 readme = "README.md"
 authors = [{ name = "suayip uzulmez", email = "suayip.541@gmail.com" }]
@@ -22,10 +22,29 @@ requires-python = ">=3.10"
 "Bug Tracker" = "https://github.com/realsuayip/envanter/issues"
 
 [tool.black]
-line-length = 79
+line-length = 88
 
 [tool.isort]
 profile = "black"
 sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-combine_as_imports=true
-line_length = 79
+combine_as_imports = true
+line_length = 88
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+    "RUF", # Ruff-specific
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+]
+line-length = 88
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+strict = true

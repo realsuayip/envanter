@@ -3,9 +3,9 @@ from __future__ import annotations
 import decimal
 import json
 import os
-from typing import Any, Callable, List, TypeVar, cast
+from typing import Any, Callable, List, TypeVar, cast, overload
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 __all__ = ["env", "EnvironmentParser"]
 
 
@@ -31,7 +31,8 @@ class EnvironmentParser:
         name: _str_T,
         /,
         default: _V = _empty,
-        parser: Callable[..., _T] = _str_F,
+        *,
+        parser: Callable[..., _T],
     ) -> _T | _V:
         """
         Allows fetching values from environment with custom parser
@@ -53,6 +54,24 @@ class EnvironmentParser:
                 raise
             return default
         return parser(value)
+
+    @overload
+    def list(
+        self, name: _str_T, /, default: _V = _empty, *, delimiter: _str_T = ","
+    ) -> List[str] | _V:
+        ...
+
+    @overload
+    def list(
+        self,
+        name: _str_T,
+        /,
+        default: _V = _empty,
+        *,
+        delimiter: _str_T = ",",
+        parser: Callable[..., _T],
+    ) -> List[_T] | _V:
+        ...
 
     def list(
         self,
@@ -87,6 +106,29 @@ class EnvironmentParser:
             return default
         return [parser(item) for item in value.split(delimiter)]
 
+    @overload
+    def choice(
+        self,
+        name: _str_T,
+        /,
+        default: _V = _empty,
+        *,
+        choices: List[_str_T],
+    ) -> _str_T | _V:
+        ...
+
+    @overload
+    def choice(
+        self,
+        name: _str_T,
+        /,
+        default: _V = _empty,
+        *,
+        choices: List[_str_T],
+        parser: Callable[..., _T],
+    ) -> _T | _V:
+        ...
+
     def choice(
         self,
         name: _str_T,
@@ -95,7 +137,7 @@ class EnvironmentParser:
         *,
         choices: List[_str_T],
         parser: Callable[..., _T] = _str_F,
-    ) -> _T | _V:
+    ) -> _str_T | _T | _V:
         """
         Get an environment variable, provided that it complies with the
         choices in the related parameter. Otherwise, throws an exception
@@ -221,9 +263,7 @@ class EnvironmentParser:
                 raise
             return default
 
-    def decimal(
-        self, name: _str_T, /, default: _T = _empty
-    ) -> decimal.Decimal | _T:
+    def decimal(self, name: _str_T, /, default: _T = _empty) -> decimal.Decimal | _T:
         """
         Get a decimal (decimal.Decimal) from environment.
 
