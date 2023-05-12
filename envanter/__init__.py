@@ -3,10 +3,10 @@ from __future__ import annotations
 import decimal
 import json
 import os
-from typing import Any, Callable, List, TypeVar, cast, overload
+from typing import Any, Callable, Iterable, List, TypeVar, cast, overload
 
 __version__ = "1.2.0"
-__all__ = ["env", "EnvironmentParser"]
+__all__ = ("env", "EnvironmentParser")
 
 
 class _Empty:
@@ -113,7 +113,7 @@ class EnvironmentParser:
         /,
         default: _V = _empty,
         *,
-        choices: List[_str_T],
+        choices: Iterable[_str_T],
     ) -> _str_T | _V:
         ...
 
@@ -124,7 +124,7 @@ class EnvironmentParser:
         /,
         default: _V = _empty,
         *,
-        choices: List[_str_T],
+        choices: Iterable[_str_T],
         parser: Callable[..., _T],
     ) -> _T | _V:
         ...
@@ -135,19 +135,19 @@ class EnvironmentParser:
         /,
         default: _V = _empty,
         *,
-        choices: List[_str_T],
+        choices: Iterable[_str_T],
         parser: Callable[..., _T] = _str_F,
     ) -> _str_T | _T | _V:
         """
         Get an environment variable, provided that it complies with the
         choices in the related parameter. Otherwise, throws an exception
-        (ValueError), with available choices.
+        (ValueError), with the available choices.
 
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found. Notice: if the variable is found but, it does not
          match any of the choices, an exception will be raised.
-        :param choices: List of string that contain valid choices.
+        :param choices: Iterable of strings that contain the valid choices.
         :param parser: A callable object that is going to parse the
          variable, optional.
         :raises: ``KeyError`` ``ValueError``
@@ -263,7 +263,9 @@ class EnvironmentParser:
                 raise
             return default
 
-    def decimal(self, name: _str_T, /, default: _T = _empty) -> decimal.Decimal | _T:
+    def decimal(
+        self, name: _str_T, /, default: _T = _empty
+    ) -> decimal.Decimal | _T:
         """
         Get a decimal (decimal.Decimal) from environment.
 
