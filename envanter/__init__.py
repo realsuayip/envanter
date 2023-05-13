@@ -263,9 +263,7 @@ class EnvironmentParser:
                 raise
             return default
 
-    def decimal(
-        self, name: _str_T, /, default: _T = _empty
-    ) -> decimal.Decimal | _T:
+    def decimal(self, name: _str_T, /, default: _T = _empty) -> decimal.Decimal | _T:
         """
         Get a decimal (decimal.Decimal) from environment.
 
