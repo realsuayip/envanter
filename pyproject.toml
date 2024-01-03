@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "envanter"
-version = "1.2.0"
+version = "1.2.1"
 description = "Yet another environment parser."
 readme = "README.md"
 authors = [{ name = "suayip uzulmez", email = "suayip.541@gmail.com" }]
@@ -21,15 +21,6 @@ requires-python = ">=3.10"
 "Homepage" = "https://github.com/realsuayip/envanter"
 "Bug Tracker" = "https://github.com/realsuayip/envanter/issues"
 
-[tool.black]
-line-length = 88
-
-[tool.isort]
-profile = "black"
-sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-combine_as_imports = true
-line_length = 88
-
 [tool.ruff]
 select = [
     "E", # pycodestyle errors
@@ -40,8 +31,20 @@ select = [
     "RUF", # Ruff-specific
     "C4", # flake8-comprehensions
     "C90", # mccabe
+    "I", # isort
 ]
+target-version = "py310"
 line-length = 88
+
+[tool.ruff.isort]
+combine-as-imports = true
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
 
 [tool.ruff.mccabe]
 max-complexity = 10

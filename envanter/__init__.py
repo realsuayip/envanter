@@ -5,7 +5,7 @@ import json
 import os
 from typing import Any, Callable, Iterable, List, TypeVar, cast, overload
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __all__ = ("env", "EnvironmentParser")
 
 
