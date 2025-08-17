@@ -1,9 +1,19 @@
 from __future__ import annotations
 
-import decimal
+import enum
 import json
 import os
-from typing import Any, Callable, Iterable, List, TypeVar, cast, overload
+from decimal import Decimal
+from typing import (
+    Any,
+    Callable,
+    Final,
+    Iterable,
+    List,
+    TypeAlias,
+    TypeVar,
+    overload,
+)
 
 __version__ = "1.2.1"
 __all__ = (
@@ -11,17 +21,14 @@ __all__ = (
     "env",
 )
 
+NotSet = enum.Enum("NotSet", "notset")
+notset: Final = NotSet.notset
 
-class _Empty:
-    def __repr__(self) -> str:
-        return "empty"
+T = TypeVar("T")
+V = TypeVar("V")
 
-
-_empty: Any = _Empty()
-_T = TypeVar("_T")
-_V = TypeVar("_V")
-_str_T = str
-_str_F = cast(Callable[..., _T], str)
+# this is necessary due to `env.str` pollution
+String: TypeAlias = str
 
 
 class EnvironmentParser:
@@ -31,12 +38,12 @@ class EnvironmentParser:
 
     def parse(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        parser: Callable[..., _T],
-    ) -> _T | _V:
+        parser: Callable[..., T],
+    ) -> T | V:
         """
         Allows fetching values from environment with custom parser
         function to modify it before returning.
@@ -53,36 +60,36 @@ class EnvironmentParser:
         try:
             value = os.environ[name]
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
         return parser(value)
 
     @overload
     def list(
-        self, name: _str_T, /, default: _V = _empty, *, delimiter: _str_T = ","
-    ) -> List[str] | _V: ...
+        self, name: String, /, default: V | NotSet = notset, *, delimiter: String = ","
+    ) -> List[str] | V: ...
 
     @overload
     def list(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        delimiter: _str_T = ",",
-        parser: Callable[..., _T],
-    ) -> List[_T] | _V: ...
+        delimiter: String = ",",
+        parser: Callable[..., T],
+    ) -> List[T] | V: ...
 
     def list(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        delimiter: _str_T = ",",
-        parser: Callable[..., _T] = _str_F,
-    ) -> List[str] | List[_T] | _V:
+        delimiter: String = ",",
+        parser: Callable[..., T] | NotSet = notset,
+    ) -> List[str] | List[T] | V:
         """
         Derive a list from the value of an environment variable.
 
@@ -102,41 +109,43 @@ class EnvironmentParser:
         try:
             value = os.environ[name]
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
+        if parser is notset:
+            return value.split(delimiter)
         return [parser(item) for item in value.split(delimiter)]
 
     @overload
     def choice(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        choices: Iterable[_str_T],
-    ) -> _str_T | _V: ...
+        choices: Iterable[String],
+    ) -> String | V: ...
 
     @overload
     def choice(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        choices: Iterable[_str_T],
-        parser: Callable[..., _T],
-    ) -> _T | _V: ...
+        choices: Iterable[String],
+        parser: Callable[..., T],
+    ) -> T | V: ...
 
     def choice(
         self,
-        name: _str_T,
+        name: String,
         /,
-        default: _V = _empty,
+        default: V | NotSet = notset,
         *,
-        choices: Iterable[_str_T],
-        parser: Callable[..., _T] = _str_F,
-    ) -> _str_T | _T | _V:
+        choices: Iterable[String],
+        parser: Callable[..., T] | NotSet = notset,
+    ) -> String | T | V:
         """
         Get an environment variable, provided that it complies with the
         choices in the related parameter. Otherwise, throws an exception
@@ -157,7 +166,7 @@ class EnvironmentParser:
         try:
             value = os.environ[name]
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
@@ -170,9 +179,11 @@ class EnvironmentParser:
                     "expected": tuple(choices),
                 }
             )
+        if parser is notset:
+            return value
         return parser(value)
 
-    def bool(self, name: _str_T, /, default: _T = _empty) -> bool | _T:
+    def bool(self, name: String, /, default: T | NotSet = notset) -> bool | T:
         """
         Get a boolean from environment variable. Allowed values are:
         'true', '1', 'false' and '0'.
@@ -188,7 +199,7 @@ class EnvironmentParser:
         try:
             value = os.environ[name]
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
@@ -207,7 +218,7 @@ class EnvironmentParser:
             )
         return value in truthy
 
-    def str(self, name: _str_T, /, default: _T = _empty) -> _str_T | _T:
+    def str(self, name: String, /, default: T | NotSet = notset) -> String | T:
         """
         Get a string from environment.
 
@@ -221,11 +232,11 @@ class EnvironmentParser:
         try:
             return os.environ[name]
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
-    def int(self, name: _str_T, /, default: _T = _empty) -> int | _T:
+    def int(self, name: String, /, default: T | NotSet = notset) -> int | T:
         """
         Get an integer from environment.
 
@@ -239,11 +250,11 @@ class EnvironmentParser:
         try:
             return int(os.environ[name])
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
-    def float(self, name: _str_T, /, default: _T = _empty) -> float | _T:
+    def float(self, name: String, /, default: T | NotSet = notset) -> float | T:
         """
         Get a float from environment.
 
@@ -258,11 +269,11 @@ class EnvironmentParser:
         try:
             return float(os.environ[name])
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
-    def decimal(self, name: _str_T, /, default: _T = _empty) -> decimal.Decimal | _T:
+    def decimal(self, name: String, /, default: T | NotSet = notset) -> Decimal | T:
         """
         Get a decimal (decimal.Decimal) from environment.
 
@@ -275,13 +286,13 @@ class EnvironmentParser:
         """
 
         try:
-            return decimal.Decimal(os.environ[name])
+            return Decimal(os.environ[name])
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
-    def json(self, name: _str_T, /, default: _T = _empty) -> Any | _T:
+    def json(self, name: String, /, default: T | NotSet = notset) -> Any | T:
         """
         Get Python serialization of a JSON string from environment.
 
@@ -297,7 +308,7 @@ class EnvironmentParser:
         try:
             return json.loads(os.environ[name])
         except KeyError:
-            if default is _empty:
+            if default is notset:
                 raise
             return default
 
