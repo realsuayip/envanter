@@ -54,8 +54,7 @@ class EnvironmentParser:
         :param parser: A callable object that is going to parse the
          variable.
         :raises: ``KeyError``
-        :parser: ``str`` if no custom parser is specified.
-        :return: Parsed environment variable or the default value.
+        :return: Parsed environment variable, or the default value.
         """
         try:
             value = os.environ[name]
@@ -153,8 +152,12 @@ class EnvironmentParser:
 
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
-         not found. Notice: if the variable is found but, it does not
-         match any of the choices, an exception will be raised.
+         not found.
+
+         .. warning::
+            If the variable is found but, it does not match any of the choices,
+            an exception (``ValueError``) will be raised.
+
         :param choices: Iterable of strings that contain the valid choices.
         :param parser: A callable object that is going to parse the
          variable, optional.
@@ -186,7 +189,7 @@ class EnvironmentParser:
     def bool(self, name: String, /, default: T | NotSet = notset) -> bool | T:
         """
         Get a boolean from environment variable. Allowed values are:
-        'true', '1', 'false' and '0'.
+        ``true``, ``1``, ``false`` and ``0``.
 
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
@@ -262,7 +265,7 @@ class EnvironmentParser:
         :param default: Optional default value in case the variable is
          not found.
         :raises: ``KeyError``
-        :parser: ``float`` if no custom parser is specified
+        :parser: ``float``
         :return: A float or the default value.
         """
 
@@ -275,13 +278,13 @@ class EnvironmentParser:
 
     def decimal(self, name: String, /, default: T | NotSet = notset) -> Decimal | T:
         """
-        Get a decimal (decimal.Decimal) from environment.
+        Get a decimal (``decimal.Decimal``) from environment.
 
         :param name: Name of the environment variable.
         :param default: Optional default value in case the variable is
          not found.
         :raises: ``KeyError``
-        :parser: ``decimal.Decimal`` if no custom parser is specified
+        :parser: ``decimal.Decimal``
         :return: A decimal or the default value.
         """
 
