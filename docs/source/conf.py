@@ -1,7 +1,7 @@
 project = "envanter"
 copyright = "2025, şuayip üzülmez"
 author = "şuayip üzülmez"
-release = "1.2.1"
+release = "1.3.0"
 
 extensions = [
     "sphinx.ext.autodoc",
