@@ -6,7 +6,10 @@ import os
 from typing import Any, Callable, Iterable, List, TypeVar, cast, overload
 
 __version__ = "1.2.1"
-__all__ = ("env", "EnvironmentParser")
+__all__ = (
+    "EnvironmentParser",
+    "env",
+)
 
 
 class _Empty:
@@ -58,8 +61,7 @@ class EnvironmentParser:
     @overload
     def list(
         self, name: _str_T, /, default: _V = _empty, *, delimiter: _str_T = ","
-    ) -> List[str] | _V:
-        ...
+    ) -> List[str] | _V: ...
 
     @overload
     def list(
@@ -70,8 +72,7 @@ class EnvironmentParser:
         *,
         delimiter: _str_T = ",",
         parser: Callable[..., _T],
-    ) -> List[_T] | _V:
-        ...
+    ) -> List[_T] | _V: ...
 
     def list(
         self,
@@ -114,8 +115,7 @@ class EnvironmentParser:
         default: _V = _empty,
         *,
         choices: Iterable[_str_T],
-    ) -> _str_T | _V:
-        ...
+    ) -> _str_T | _V: ...
 
     @overload
     def choice(
@@ -126,8 +126,7 @@ class EnvironmentParser:
         *,
         choices: Iterable[_str_T],
         parser: Callable[..., _T],
-    ) -> _T | _V:
-        ...
+    ) -> _T | _V: ...
 
     def choice(
         self,

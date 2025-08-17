@@ -1,18 +1,22 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.7.21,<0.8.0"]
+build-backend = "uv_build"
 
 [project]
 name = "envanter"
 version = "1.2.1"
 description = "Yet another environment parser."
 readme = "README.md"
-authors = [{ name = "suayip uzulmez", email = "suayip.541@gmail.com" }]
+authors = [{ name = "şuayip üzülmez", email = "suayip.541@gmail.com" }]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 keywords = ["env", "envparse", "environment", "environment-parser"]
 requires-python = ">=3.10"
@@ -21,7 +25,19 @@ requires-python = ">=3.10"
 "Homepage" = "https://github.com/realsuayip/envanter"
 "Bug Tracker" = "https://github.com/realsuayip/envanter/issues"
 
-[tool.ruff]
+[dependency-groups]
+dev = [
+    "mypy",
+    "tox",
+    "tox-uv",
+]
+docs = [
+    "docstrfmt",
+    "sphinx",
+    "furo",
+]
+
+[tool.ruff.lint]
 select = [
     "E", # pycodestyle errors
     "W", # pycodestyle warnings
@@ -33,10 +49,10 @@ select = [
     "C90", # mccabe
     "I", # isort
 ]
-target-version = "py310"
-line-length = 88
+fixable = ["I"]
+ignore = ["B904", "RUF012"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 section-order = [
     "future",
@@ -51,3 +67,16 @@ max-complexity = 10
 
 [tool.mypy]
 strict = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py310,py311,py312,py313
+
+[testenv]
+deps =
+    mypy
+commands =
+    python -m unittest
+    mypy src/ tests/
+"""

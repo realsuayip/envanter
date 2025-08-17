@@ -6,7 +6,7 @@ from envanter import env
 
 
 class TestEnvironmentParser(TestCase):
-    def test_parser(self):
+    def test_parser(self) -> None:
         os.environ["string"] = "Hello"
         os.environ["int"] = "6"
         os.environ["float"] = "3.14"
@@ -19,7 +19,7 @@ class TestEnvironmentParser(TestCase):
         self.assertEqual(decimal.Decimal("2.71"), env.decimal("decimal"))
         self.assertEqual({"hello": "world"}, env.json("json"))
 
-    def test_parse_list(self):
+    def test_parse_list(self) -> None:
         os.environ["list1"] = "hi,hello,whatsup"
         os.environ["list2"] = "hi?hello?whatsup"
 
@@ -27,13 +27,13 @@ class TestEnvironmentParser(TestCase):
         self.assertEqual(lst, env.list("list1"))
         self.assertEqual(lst, env.list("list2", delimiter="?"))
 
-    def test_parse_list_with_custom_parser(self):
+    def test_parse_list_with_custom_parser(self) -> None:
         os.environ["list1"] = "1.3,2,3"
 
         val = env.list("list1", parser=float)
         self.assertEqual([1.3, 2.0, 3.0], val)
 
-    def test_parse_choice(self):
+    def test_parse_choice(self) -> None:
         os.environ["my_choice"] = "country"
         os.environ["my_int"] = "52"
         os.environ["bad_choice"] = "world"
@@ -53,7 +53,7 @@ class TestEnvironmentParser(TestCase):
         val3 = env.choice("potato", choices=["tomato"], default=10)
         self.assertEqual(10, val3)
 
-    def test_parse_bool(self):
+    def test_parse_bool(self) -> None:
         os.environ["bool_1"] = "1"
         os.environ["bool_0"] = "0"
 
@@ -78,7 +78,7 @@ class TestEnvironmentParser(TestCase):
         ):
             env.bool("bad_bool")
 
-    def test_required(self):
+    def test_required(self) -> None:
         with self.assertRaises(KeyError):
             env.str("envanter_test_with_default")
 
@@ -91,6 +91,6 @@ class TestEnvironmentParser(TestCase):
         )
         self.assertEqual(True, env.str("envanter_test_with_default", True))
 
-    def test_parse_custom(self):
+    def test_parse_custom(self) -> None:
         os.environ["number_2"] = "2"
         self.assertEqual(3, env.parse("number_2", parser=lambda i: int(i) + 1))

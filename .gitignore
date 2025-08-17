@@ -8,3 +8,4 @@ venv
 .tox
 __pycache__/
 .DS_Store
+uv.lock
