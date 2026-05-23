@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 import enum
 import json
 import os
@@ -10,7 +11,6 @@ from typing import (
     Final,
     Iterable,
     List,
-    TypeAlias,
     TypeVar,
     overload,
 )
@@ -27,9 +27,6 @@ notset: Final = NotSet.notset
 T = TypeVar("T")
 V = TypeVar("V")
 
-# this is necessary due to `env.str` pollution
-String: TypeAlias = str
-
 
 class EnvironmentParser:
     """
@@ -38,7 +35,7 @@ class EnvironmentParser:
 
     def parse(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
@@ -66,27 +63,32 @@ class EnvironmentParser:
 
     @overload
     def list(
-        self, name: String, /, default: V | NotSet = notset, *, delimiter: String = ","
+        self,
+        name: builtins.str,
+        /,
+        default: V | NotSet = notset,
+        *,
+        delimiter: builtins.str = ",",
     ) -> List[str] | V: ...
 
     @overload
     def list(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
-        delimiter: String = ",",
+        delimiter: builtins.str = ",",
         parser: Callable[..., T],
     ) -> List[T] | V: ...
 
     def list(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
-        delimiter: String = ",",
+        delimiter: builtins.str = ",",
         parser: Callable[..., T] | NotSet = notset,
     ) -> List[str] | List[T] | V:
         """
@@ -118,33 +120,33 @@ class EnvironmentParser:
     @overload
     def choice(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
-        choices: Iterable[String],
-    ) -> String | V: ...
+        choices: Iterable[builtins.str],
+    ) -> builtins.str | V: ...
 
     @overload
     def choice(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
-        choices: Iterable[String],
+        choices: Iterable[builtins.str],
         parser: Callable[..., T],
     ) -> T | V: ...
 
     def choice(
         self,
-        name: String,
+        name: builtins.str,
         /,
         default: V | NotSet = notset,
         *,
-        choices: Iterable[String],
+        choices: Iterable[builtins.str],
         parser: Callable[..., T] | NotSet = notset,
-    ) -> String | T | V:
+    ) -> builtins.str | T | V:
         """
         Get an environment variable, provided that it complies with the
         choices in the related parameter. Otherwise, throws an exception
@@ -186,7 +188,7 @@ class EnvironmentParser:
             return value
         return parser(value)
 
-    def bool(self, name: String, /, default: T | NotSet = notset) -> bool | T:
+    def bool(self, name: builtins.str, /, default: T | NotSet = notset) -> bool | T:
         """
         Get a boolean from environment variable. Allowed values are:
         ``true``, ``1``, ``false`` and ``0``.
@@ -221,7 +223,9 @@ class EnvironmentParser:
             )
         return value in truthy
 
-    def str(self, name: String, /, default: T | NotSet = notset) -> String | T:
+    def str(
+        self, name: builtins.str, /, default: T | NotSet = notset
+    ) -> builtins.str | T:
         """
         Get a string from environment.
 
@@ -239,7 +243,7 @@ class EnvironmentParser:
                 raise
             return default
 
-    def int(self, name: String, /, default: T | NotSet = notset) -> int | T:
+    def int(self, name: builtins.str, /, default: T | NotSet = notset) -> int | T:
         """
         Get an integer from environment.
 
@@ -257,7 +261,7 @@ class EnvironmentParser:
                 raise
             return default
 
-    def float(self, name: String, /, default: T | NotSet = notset) -> float | T:
+    def float(self, name: builtins.str, /, default: T | NotSet = notset) -> float | T:
         """
         Get a float from environment.
 
@@ -276,7 +280,9 @@ class EnvironmentParser:
                 raise
             return default
 
-    def decimal(self, name: String, /, default: T | NotSet = notset) -> Decimal | T:
+    def decimal(
+        self, name: builtins.str, /, default: T | NotSet = notset
+    ) -> Decimal | T:
         """
         Get a decimal (``decimal.Decimal``) from environment.
 
@@ -295,7 +301,7 @@ class EnvironmentParser:
                 raise
             return default
 
-    def json(self, name: String, /, default: T | NotSet = notset) -> Any | T:
+    def json(self, name: builtins.str, /, default: T | NotSet = notset) -> Any | T:
         """
         Get Python serialization of a JSON string from environment.
 
